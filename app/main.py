@@ -18,6 +18,7 @@ from app.auth import verify_password
 from app.config import Settings
 from app.db import Database, event
 from app.drafts import Editorial
+from app.discovery_routes import register_discovery
 from app.errors import DomainError
 from app.jobs import enqueue
 from app.publications import Publications
@@ -315,4 +316,5 @@ def create_app(settings=None):
             raise DomainError('表单内容不完整或格式错误') from None
         return RedirectResponse(destination, status_code=303)
 
+    register_discovery(app, db, settings, page, api_csrf, check_csrf)
     return app

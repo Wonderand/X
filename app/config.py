@@ -19,6 +19,9 @@ class Settings:
     postiz_base_url: str = ''
     postiz_api_key: str = ''
     postiz_integration_id: str = ''
+    skills_root: str = ''
+    skills_python: str = ''
+    anysearch_runtime_conf: str = ''
 
     def __post_init__(self):
         path = Path(self.data_dir).resolve()

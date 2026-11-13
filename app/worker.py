@@ -9,6 +9,7 @@ import uuid
 from app.adapters.generator import Generator
 from app.adapters.postiz import Postiz
 from app.config import Settings
+from app.discovery_worker import DiscoveryRunner
 from app.db import Database, event, now
 from app.drafts import Editorial
 from app.errors import DomainError, ServiceError
@@ -17,7 +18,7 @@ from app.publications import Publications, parse_time
 
 
 class Worker:
-    def __init__(self, db, settings, *, generator_transport=None, postiz_transport=None):
+    def __init__(self, db, settings, *, generator_transport=None, postiz_transport=None, discovery_adapter=None):
         self.db, self.settings = db, settings
         self.jobs = Jobs(db)
         self.editorial = Editorial(db)
@@ -25,13 +26,18 @@ class Worker:
         self.generator = Generator(settings, generator_transport)
         self.publisher = Postiz(settings, postiz_transport)
         self.owner = uuid.uuid4().hex
+        self.discovery = DiscoveryRunner(db, settings, discovery_adapter)
 
     def run_once(self):
+        self.discovery.schedule_due()
         job = self.jobs.claim(self.owner)
         if not job:
             return False
         try:
-            if job['kind'] == 'generate_draft':
+            if job['kind'] in {'discover_sources', 'read_candidate'}:
+                self.discovery.handle(job)
+                delay = None
+            elif job['kind'] == 'generate_draft':
                 self.generate(job)
                 delay = None
             elif job['kind'] == 'submit_publication':
