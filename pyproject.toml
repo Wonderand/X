@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xops"
+version = "0.1.0"
+description = "Source-grounded technical content editorial and publishing workspace"
+requires-python = ">=3.11"
+dependencies = ["fastapi==0.123.5", "httpx==0.28.1", "uvicorn==0.38.0", "Jinja2==3.1.6", "itsdangerous==2.2.0", "python-multipart==0.0.20", "python-dotenv==1.2.1", "tzdata==2025.2"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["migrations/*.sql", "templates/*.html", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

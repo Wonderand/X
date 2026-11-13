@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}X Operations{% endblock %}</title><link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script></head>
+<body>
+{% macro token() %}<input type="hidden" name="csrf_token" value="{{ csrf }}">{% endmacro %}
+{% macro badge(value) %}<span class="badge {{ value }}">{{ {'review_pending':'待审核','approved':'已批准','generating':'生成中','rejected':'已驳回','ready':'待提交','submitting':'提交中','scheduled':'已排期','published':'已发布','failed':'失败','reconciliation_required':'待核对','cancelled':'已取消','pending':'等待执行','running':'执行中','done':'已完成'}.get(value,value) }}</span>{% endmacro %}
+<aside class="sidebar"><a class="brand" href="/"><span class="brand-mark">X</span> Operations<span class="version">M1</span></a><div class="workspace-label">TECH EDITORIAL WORKSPACE</div><nav>{% for href,label,icon in [('/','工作总览','◫'),('/sources','素材与来源','▤'),('/drafts','草稿审核','✎'),('/calendar','发布日历','▦'),('/settings','账号与设置','⚙')] %}<a href="{{ href }}" class="{{ 'active' if request.url.path==href or (href=='/drafts' and request.url.path.startswith('/drafts/')) else '' }}"><span>{{ icon }}</span>{{ label }}</a>{% endfor %}</nav><div class="sidebar-footer"><span class="status-dot {{ 'off' if account.paused else '' }}"></span>{{ '发布已暂停' if account.paused else '审核后自动发布' }}<p>技术新闻 · 解读 · 实用发现</p><form action="/logout" method="post">{{ token() }}<button class="text-button">退出登录 ↗</button></form></div></aside>
+<main><header class="topbar"><span>WORKSPACE / {{ account.name }}</span><span class="muted">{{ account.timezone or '时区待配置' }} · 多语言内容工作台</span></header><div class="page">{% block content %}{% endblock %}</div></main>
+</body></html>
